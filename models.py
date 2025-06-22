@@ -1,6 +1,8 @@
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_serializer import SerializerMixin
 from datetime import datetime
+from sqlalchemy.ext.associationproxy import association_proxy
+from sqlalchemy.orm import validates
 
 db = SQLAlchemy()
 
@@ -66,8 +68,8 @@ class Appearance(db.Model, SerializerMixin):
         guest_name = self.guest.name if self.guest else 'Unknown Guest'
         episode_date = self.episode.date if self.episode else 'Unknown Date'
         return f'<Appearance {guest_name} on {episode_date} >'
-    
-      
+
+
 
     
 
