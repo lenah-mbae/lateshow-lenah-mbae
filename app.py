@@ -31,6 +31,17 @@ def get_guests():
     guest_list = [guest.to_dict(rules=('-appearances',)) for guest in guests]
     return jsonify(guest_list), 200
 
+@app.route('/episodes/<int:id>', methods=['DELETE'])
+def delete_episode(id):
+    episode = Episode.query.get(id)
+    if not episode:
+        return jsonify({"error": "Episode not found"}), 404
+
+    db.session.delete(episode)
+    db.session.commit()
+    
+    return jsonify({"message": "Episode deleted successfully"}), 200
+
 @app.route('/appearances', methods=['POST'])
 def create_appearance():
     data = request.get_json()
