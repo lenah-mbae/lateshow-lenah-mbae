@@ -1,5 +1,7 @@
 from flask import Flask, request, make_response, jsonify
 from flask_migrate import Migrate
+from datetime import datetime
+
 from models import db, Episode, Guest, Appearance
 
 
@@ -41,6 +43,30 @@ def delete_episode(id):
     db.session.commit()
     
     return jsonify({"message": "Episode deleted successfully"}), 200
+
+
+@app.route('/episodes/<int:id>', methods=['PATCH'])
+def update_episode(id):
+    episode = Episode.query.get(id)
+    if not episode:
+        return jsonify({'error': 'Episode not found'}), 404
+
+    data = request.get_json()
+
+    try:
+        if 'number' in data:
+            episode.number = int(data['number'])
+
+        if 'date' in data:
+            # Assuming the frontend sends date as string like "2023-08-01"
+            episode.date = datetime.strptime(data['date'], '%Y-%m-%d')
+
+        db.session.commit()
+        return jsonify(episode.to_dict()), 200
+
+    except Exception as e:
+        return jsonify({'error': str(e)}), 400
+
 
 @app.route('/appearances', methods=['POST'])
 def create_appearance():
